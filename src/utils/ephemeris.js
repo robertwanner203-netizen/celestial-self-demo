@@ -10,8 +10,22 @@ const normalizeAngle = (angle) => {
 };
 
 export const getPlanetLongitude = (planet, date) => {
-  const body = Astronomy.Body[planet];
   const t = Astronomy.MakeTime(date);
+
+  // Sun requires special handling - use geocentric position
+  if (planet === 'Sun') {
+    const sun = Astronomy.SunPosition(t);
+    return sun.elon;
+  }
+
+  // Moon also needs geocentric coordinates
+  if (planet === 'Moon') {
+    const moon = Astronomy.EclipticGeoMoon(t);
+    return moon.lon;
+  }
+
+  // For other planets, use heliocentric longitude
+  const body = Astronomy.Body[planet];
   return Astronomy.EclipticLongitude(body, t);
 };
 
